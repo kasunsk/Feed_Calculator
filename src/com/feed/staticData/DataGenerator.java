@@ -43,19 +43,19 @@ public class DataGenerator {
         String bulkForageToGive = "";
         String supplementaryForageToGive = "";
 
-        //Main Inputs
-        Double bodyWeight = 200D;
-        Double milkYield = 6D;
-        Double fatPercentage = 3.5D;
+        // Inputs
+        Double bodyWeight = 273D;
+        Double milkYield = 5D;
+        Double fatPercentage = 4D;
 
         // Input
         List<String> selectedBulkForage = new ArrayList<>(Arrays.asList("co3","gunia"));
 
         //Input
-        List<String> selectedSupplementary = new ArrayList<>(Arrays.asList("albezia", "ipil"));
+        List<String> selectedSupplementary = new ArrayList<>(Arrays.asList("gliricidia","albezia"));
 
         //Input
-        List<String> concentrateForage = new ArrayList<>(Arrays.asList("ricebran"));
+        List<String> concentrateForage = new ArrayList<>(Arrays.asList("coconutpoonac"));
 
         List<Integer> trialSupplementaryForage = new ArrayList<>();
         addTrialValueToTrialSupplementaryForage(trialSupplementaryForage);
@@ -174,7 +174,7 @@ public class DataGenerator {
             relatedMilkObj = standardNutritionThreeToThreePointFive.get(milkYield.intValue());
         } else if ( fatPercentage >= 3.5D && fatPercentage < 4D ) {
             relatedMilkObj = standardNutritionThreePointFiveToFour.get(milkYield.intValue());
-        }else if ( fatPercentage >= 4D && fatPercentage < 4.5D ) {
+        }else if ( fatPercentage >= 4D && fatPercentage <= 4.5D ) {
             relatedMilkObj = standardNutritionFourToFourPointFive.get(milkYield.intValue());
         }
         return relatedMilkObj;
