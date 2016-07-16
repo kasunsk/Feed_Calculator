@@ -53,17 +53,17 @@ public class DataGeneratorHelper {
         standardNutrition.put(1, getMilkObj(1, 4030D, 520D));
         standardNutrition.put(2, getMilkObj(2, 4360D, 580D));
         standardNutrition.put(3, getMilkObj(3, 4690D, 640D));
-        standardNutrition.put(4, getMilkObj(4, 3990D, 510D));
-        standardNutrition.put(5, getMilkObj(5, 4220D, 560D));
-        standardNutrition.put(6, getMilkObj(6, 4570D, 610D));
-        standardNutrition.put(7, getMilkObj(7, 3990D, 510D));
-        standardNutrition.put(8, getMilkObj(8, 4220D, 560D));
-        standardNutrition.put(9, getMilkObj(9, 4570D, 610D));
-        standardNutrition.put(10, getMilkObj(10, 3990D, 510D));
-        standardNutrition.put(11, getMilkObj(11, 4220D, 560D));
-        standardNutrition.put(12, getMilkObj(12, 4570D, 610D));
-        standardNutrition.put(13, getMilkObj(13, 3990D, 510D));
-        standardNutrition.put(14, getMilkObj(14, 4220D, 560D));
+        standardNutrition.put(4, getMilkObj(4, 5020D, 700D));
+        standardNutrition.put(5, getMilkObj(5, 5350D, 760D));
+        standardNutrition.put(6, getMilkObj(6, 5680D, 820D));
+        standardNutrition.put(7, getMilkObj(7, 6010D, 880D));
+        standardNutrition.put(8, getMilkObj(8, 6340D, 940D));
+
+        standardNutrition.put(10, getMilkObj(10, 7000D, 1060D));
+
+        standardNutrition.put(12, getMilkObj(12, 7760D, 1180D));
+
+        standardNutrition.put(14, getMilkObj(14, 8320D, 1300));
 
         return standardNutrition;
     }
