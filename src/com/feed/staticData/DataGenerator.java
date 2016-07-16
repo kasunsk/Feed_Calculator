@@ -109,7 +109,7 @@ public class DataGenerator {
                     supplementaryForageToGive = trialSupplementary.toString();
                     concentrateKey = generateKeyForGivenData(concentrateForage);
                     FeedObj concentrateFeed = feedNutritionCatThree.get(concentrateKey);
-                    concentrateAmount = (totalTDN - tdnValueForCow) / concentrateFeed.getTdn();
+                    concentrateAmount = ( tdnValueForCow - totalTDN ) / concentrateFeed.getTdn();
                     break;
                 }
                 attempts += 1;
@@ -150,13 +150,18 @@ public class DataGenerator {
     }
 
     private static String generateKeyForGivenData(List<String> selectedBulkForage) {
+
         String bulkForageKey = "";
+        int i = 0;
 
-        if (selectedBulkForage != null && selectedBulkForage.size() == 1) {
-            bulkForageKey = selectedBulkForage.get(0);
+        for (String basicKey : selectedBulkForage) {
 
-        } else if (selectedBulkForage.size() == 2) {
-            bulkForageKey = selectedBulkForage.get(0) + "_" + selectedBulkForage.get(1);
+            bulkForageKey = bulkForageKey + basicKey;
+
+            if ( i != selectedBulkForage.size() - 1) {
+                bulkForageKey = bulkForageKey + "_";
+            }
+            i += 1;
         }
         return bulkForageKey;
     }
@@ -173,19 +178,6 @@ public class DataGenerator {
             relatedMilkObj = standardNutritionFourToFourPointFive.get(milkYield.intValue());
         }
         return relatedMilkObj;
-    }
-
-    private static String getConcentrate(List<String> concentrateForage) {
-
-        if (concentrateForage != null ) {
-
-            if (concentrateForage.size() == 1) {
-                return concentrateForage.get(0);
-            } else if (concentrateForage.size() == 2) {
-                return concentrateForage.get(1);
-            }
-        }
-        return null;
     }
 
     private static void addTrialValueToTrialSupplementaryForage(List<Integer> trialSupplementaryForage) {
