@@ -13,49 +13,62 @@ import java.util.Map;
  */
 public class DataGenerator {
 
+    // Table Data
+    private static Map<Integer, MilkObj> standardNutritionThreeToThreePointFive;
+    private static Map<Integer, MilkObj> standardNutritionThreePointFiveToFour;
+    private static Map<Integer, MilkObj> standardNutritionFourToFourPointFive;
+
+    private static Map<String, FeedObj> feedNutritionCatOne;
+    private static Map<String, FeedObj> feedNutritionCatTwo;
+    private static Map<String, FeedObj> feedNutritionCatThree;
+
+    // Standard Values
+    private static Double standardWeightForCaw = 300D;
+    private static Double standardTdnVariationFor50kg = 300D;
+    private static Double maximumDMIntake = 2.5D;
+
     private static DataGeneratorHelper helper = new DataGeneratorHelper();
 
     public static void main(String args []) {
 
-        Map<Integer, MilkObj> standardNutritionThreeToThreePointFive= helper.getStandardNutritionThreeToThreePointFive();
-        Map<Integer, MilkObj> standardNutritionThreePointFiveToFour= helper.getStandardNutritionThreePointFiveToFour();
-        Map<Integer, MilkObj> standardNutritionFourToFourPointFive= helper.getStandardNutritionFourToFourPointFive();
+        standardNutritionThreeToThreePointFive = helper.getStandardNutritionThreeToThreePointFive();
+        standardNutritionThreePointFiveToFour= helper.getStandardNutritionThreePointFiveToFour();
+        standardNutritionFourToFourPointFive = helper.getStandardNutritionFourToFourPointFive();
 
-        Map<String, FeedObj> feedNutritionCatOne = helper.getFeedNutritionCatOne();
-        Map<String, FeedObj> feedNutritionCatTwo = helper.getFeedNutritionCatTwo();
-        Map<String, FeedObj> feedNutritionCatThree = helper.getFeedNutritionCatThree();
+        feedNutritionCatOne = helper.getFeedNutritionCatOne();
+        feedNutritionCatTwo = helper.getFeedNutritionCatTwo();
+        feedNutritionCatThree = helper.getFeedNutritionCatThree();
 
+        // Out puts
         String bulkForageToGive = "";
         String supplementaryForageToGive = "";
 
-        Double standardWeightFor300kgAnimal = 300D;
-        Double standardTdnVariationFor50kg = 300D;
-        Double maximumDMIntake = 2.5D;
-
+        //Main Inputs
         Double bodyWeight = 200D;
         Double milkYield = 6D;
         Double fatPercentage = 3.5D;
 
-        List<Integer> trialSupplementaryForage = new ArrayList<>();
+        // Input
+        List<String> selectedBulkForage = new ArrayList<>(Arrays.asList("co3","gunia"));
 
+        //Input
+        List<String> selectedSupplementary = new ArrayList<>(Arrays.asList("albezia", "ipil"));
+
+        //Input
+        List<String> concentrateForage = new ArrayList<>(Arrays.asList("ricebran"));
+
+        List<Integer> trialSupplementaryForage = new ArrayList<>();
         addTrialValueToTrialSupplementaryForage(trialSupplementaryForage);
 
-        List<String> bulkForage = new ArrayList<>(Arrays.asList("co3","gunia"));
+        MilkObj relatedMilkObj = getRelatedMilkObjFromTableData(milkYield, fatPercentage);
 
-        MilkObj relatedMilkObj = standardNutritionThreePointFiveToFour.get(milkYield.intValue());
         Double tdnValue = relatedMilkObj.getTdn();
 
-        Double bodyWeightDiff = bodyWeight - standardWeightFor300kgAnimal;
+        Double bodyWeightDiff = bodyWeight - standardWeightForCaw;
 
         Double tdnValueForCow = tdnValue + bodyWeightDiff * ( standardTdnVariationFor50kg / 50 );
 
-        String bulkForageKey = "";
-
-        if (bulkForage != null && bulkForage.size() == 1) {
-            bulkForageKey = bulkForage.get(0);
-        } else if (bulkForage.size() == 2) {
-            bulkForageKey = bulkForage.get(0) + "_" + bulkForage.get(1);
-        }
+        String bulkForageKey = generateKeyForGivenData(selectedBulkForage);
 
         FeedObj feedObj = feedNutritionCatOne.get(bulkForageKey);
 
@@ -63,32 +76,50 @@ public class DataGenerator {
 
         Double relatedTDN = feedObj.getTdn();
 
-        Double enableEatableDM = bodyWeight * maximumDMIntake / 100 ;
+        Double eatableDM = bodyWeight * maximumDMIntake / 100 ;
 
-        Double eatableBulkForageKG = enableEatableDM * 1000 / relatedDM;
+        Double eatableBulkForageKG = eatableDM * 1000 / relatedDM;
 
-        Double trialBulkForage = eatableBulkForageKG - trialSupplementaryForage.get(0);
-
-        //Input
-        List<String> havingSupplementary = new ArrayList<>();
-
-        havingSupplementary.add("albezia");
-        havingSupplementary.add("ipil");
-
-        String supplementaryKey = havingSupplementary.get(0) + "_" + havingSupplementary.get(1);
+        String supplementaryKey = generateKeyForGivenData(selectedSupplementary);
         FeedObj supplementaryFeed = feedNutritionCatTwo.get(supplementaryKey);
 
-        Double totalTDN = trialBulkForage * relatedTDN + supplementaryFeed.getTdn() * trialSupplementaryForage.get(0);
+        Double concentrateAmount = 0D;
+        int attempts = 0;
+        Double trialBulkForage = 0D;
 
-        if (tdnValueForCow - totalTDN >= 0) {
+        String concentrateKey = "";
 
-            bulkForageToGive = trialBulkForage.toString();
-            supplementaryForageToGive = trialSupplementaryForage.get(0).toString();
+        for (Integer trialSupplementary : trialSupplementaryForage) {
+
+            trialBulkForage = eatableBulkForageKG - trialSupplementary;
+
+            Double totalTDN = ( trialBulkForage * relatedTDN ) + ( supplementaryFeed.getTdn() * trialSupplementary );
+
+            if ( totalTDN - tdnValueForCow >= 0) {
+
+                bulkForageToGive = trialBulkForage.toString();
+                supplementaryForageToGive = trialSupplementary.toString();
+                break;
+
+            } else {
+
+                if (attempts >= trialSupplementaryForage.size() - 1) {
+
+                    bulkForageToGive = trialBulkForage.toString();
+                    supplementaryForageToGive = trialSupplementary.toString();
+                    concentrateKey = generateKeyForGivenData(concentrateForage);
+                    FeedObj concentrateFeed = feedNutritionCatThree.get(concentrateKey);
+                    concentrateAmount = (totalTDN - tdnValueForCow) / concentrateFeed.getTdn();
+                    break;
+                }
+                attempts += 1;
+            }
         }
 
 
-        System.out.println(" Bulk Forage = " + bulkForageToGive);
-        System.out.print(" Supplementary Forage = " + supplementaryForageToGive);
+        System.out.println(" Bulk Forage : " + bulkForageKey + " = " + round(Double.parseDouble(bulkForageToGive), 2) + " kg");
+        System.out.println(" Supplementary Forage : " + supplementaryKey + " = " + round(Double.parseDouble(supplementaryForageToGive), 2) + " kg");
+        System.out.println(" Concentrate : " + concentrateKey + " = " + round(concentrateAmount, 2) + " kg");
 
 
 //        printStandardNutrition(standardNutritionThreeToThreePointFive);
@@ -107,6 +138,54 @@ public class DataGenerator {
 //        System.out.println();
 //        printFeedNutrition(feedNutritionCatThree);
 
+    }
+
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        long factor = (long) Math.pow(10, places);
+        value = value * factor;
+        long tmp = Math.round(value);
+        return (double) tmp / factor;
+    }
+
+    private static String generateKeyForGivenData(List<String> selectedBulkForage) {
+        String bulkForageKey = "";
+
+        if (selectedBulkForage != null && selectedBulkForage.size() == 1) {
+            bulkForageKey = selectedBulkForage.get(0);
+
+        } else if (selectedBulkForage.size() == 2) {
+            bulkForageKey = selectedBulkForage.get(0) + "_" + selectedBulkForage.get(1);
+        }
+        return bulkForageKey;
+    }
+
+    private static MilkObj getRelatedMilkObjFromTableData(Double milkYield, Double fatPercentage) {
+
+        MilkObj relatedMilkObj = null;
+
+        if ( fatPercentage >= 3D && fatPercentage < 3.5D) {
+            relatedMilkObj = standardNutritionThreeToThreePointFive.get(milkYield.intValue());
+        } else if ( fatPercentage >= 3.5D && fatPercentage < 4D ) {
+            relatedMilkObj = standardNutritionThreePointFiveToFour.get(milkYield.intValue());
+        }else if ( fatPercentage >= 4D && fatPercentage < 4.5D ) {
+            relatedMilkObj = standardNutritionFourToFourPointFive.get(milkYield.intValue());
+        }
+        return relatedMilkObj;
+    }
+
+    private static String getConcentrate(List<String> concentrateForage) {
+
+        if (concentrateForage != null ) {
+
+            if (concentrateForage.size() == 1) {
+                return concentrateForage.get(0);
+            } else if (concentrateForage.size() == 2) {
+                return concentrateForage.get(1);
+            }
+        }
+        return null;
     }
 
     private static void addTrialValueToTrialSupplementaryForage(List<Integer> trialSupplementaryForage) {

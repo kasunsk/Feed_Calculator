@@ -14,9 +14,9 @@ public class DataGeneratorHelper {
     protected static Map<String, FeedObj> getFeedNutritionCatThree() {
 
         Map<String, FeedObj> feedNutrition = new HashMap<>();
-        feedNutrition.put("coconut poonac", new FeedObj("coconut poonac", 683D, 923D));
-        feedNutrition.put("rice bran", new FeedObj("rice bran", 628D, 884D));
-        feedNutrition.put("rice bran_coconut poonac", new FeedObj("rice bran_coconut poonac", 655.5D, 903D));
+        feedNutrition.put("coconutpoonac", new FeedObj("coconutpoonac", 683D, 923D));
+        feedNutrition.put("ricebran", new FeedObj("ricebran", 628D, 884D));
+        feedNutrition.put("ricebran_coconutpoonac", new FeedObj("ricebran_coconutpoonac", 655.5D, 903D));
         return feedNutrition;
     }
 
